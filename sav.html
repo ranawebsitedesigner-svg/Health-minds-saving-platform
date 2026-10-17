@@ -166,7 +166,7 @@
 
     .role-selector {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 0.01fr 1fr;
       background: #edf6ee;
       border-radius: 12px;
       padding: 6px;
@@ -361,6 +361,8 @@
       box-shadow: var(--card-shadow);
       padding: 24px 0;
     }
+
+    .sidebar.active { transform: translateX(0); }
 
     .user-info {
       padding: 0 24px 24px;
@@ -885,340 +887,8 @@
                 </button>
               </div>
             </div>
-            <div id="savingsForm" class="hidden" style="background:#f0fdf4; border-radius:12px; padding:24px; margin-bottom:24px; border:1px solid #bbf7d0;">
-              <h4 style="margin-bottom:16px; color:#166534;">Record Weekly Savings for <span id="savingsMemberName">John Doe</span></h4>
-              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:16px;">
-                <div class="form-group">
-                  <label>Amount (UGX)</label>
-                  <input type="number" id="savingsAmount" class="form-control" value="25000" min="5000" step="5000">
-                </div>
-                <div class="form-group">
-                  <label>Date</label>
-                  <input type="date" id="savingsDate" class="form-control" value="2025-12-28">
-                </div>
-                <div class="form-group">
-                  <label>Payment Method</label>
-                  <select id="savingsMethod" class="form-control">
-                    <option>Cash</option>
-                    <option>Mobile Money</option>
-                    <option>Bank Transfer</option>
-                  </select>
-                </div>
-              </div>
-              <div style="display:flex; gap:12px; margin-top:20px;">
-                <button type="button" class="btn btn-success" id="saveSavingsBtn" style="width:auto; background:#16a34a; color:#fff;">
-                  <i class="fas fa-save"></i> Save Savings
-                </button>
-                <button type="button" class="btn" id="cancelSavings" style="background:#e2e8f0; color:#475569; width:auto;">Cancel</button>
-              </div>
-            </div>
-            <h3 style="margin:24px 0 16px; font-weight:600;">Savings History</h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Member ID</th>
-                    <th>Name</th>
-                    <th>Amount (UGX)</th>
-                    <th>Method</th>
-                    <th>Updated By</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Dec 28, 2025</td>
-                    <td>HMS-001</td>
-                    <td>Kafuko Esther</td>
-                    <td class="borrow-amount currency">+25,000</td>
-                    <td>Cash</td>
-                    <td>Admin</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
 
-          <div id="loansTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Members with Active Loans</h3>
-            <div class="table-container">
-              <table id="activeLoansTable">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Member</th>
-                    <th>Loan Amount (UGX)</th>
-                    <th>Interest (UGX)</th>
-                    <th>Total Due (UGX)</th>
-                    <th>Disbursed</th>
-                    <th>Due Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>HMS-001</td>
-                    <td>Kafuko Esther</td>
-                    <td class="currency">100,000</td>
-                    <td class="currency">5,000</td>
-                    <td class="currency">105,000</td>
-                    <td>Dec 15, 2025</td>
-                    <td>Jan 26, 2026</td>
-                    <td><span class="status status-active">Active</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div id="reportsTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Financial Reports</h3>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px; margin-bottom:24px;">
-              <div class="stat-card">
-                <div>Total Savings</div>
-                <div class="stat-value currency">4,750,000</div>
-                <div class="stat-label">As of Dec 28, 2025</div>
-              </div>
-              <div class="stat-card">
-                <div>Total Interest Collected</div>
-                <div class="stat-value currency" id="reportInterest">215,000</div>
-                <div class="stat-label">Lifetime (2023–2025)</div>
-              </div>
-              <div class="stat-card">
-                <div>Cash in Hand</div>
-                <div class="stat-value currency">320,000</div>
-                <div class="stat-label">Treasurer's balance</div>
-              </div>
-            </div>
-          </div>
-
-          <div id="guaranteesTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Guarantee Management</h3>
-            <div class="stats-grid">
-              <div class="stat-card"><div>Total Guarantees</div><div class="stat-value">42</div><div class="stat-label">Since group inception</div></div>
-              <div class="stat-card"><div>Active Guarantees</div><div class="stat-value">18</div><div class="stat-label">Currently in force</div></div>
-              <div class="stat-card"><div>Guarantee Value</div><div class="stat-value currency">2,150,000</div><div class="stat-label">Total liability covered</div></div>
-              <div class="stat-card"><div>Default Rate</div><div class="stat-value">0%</div><div class="stat-label">All guarantees honored</div></div>
-            </div>
-          </div>
-
-          <div id="settingsTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Admin Settings</h3>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:24px;">
-              <div class="stat-card" style="text-align:left;">
-                <h4 style="margin-bottom:16px; color:#1e293b;"><i class="fas fa-shield-alt"></i> Security</h4>
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>PIN Timeout</span><span>5 minutes</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>Failed Login Lock</span><span>3 attempts</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:16px;"><span>Data Backup</span><span>Daily (auto)</span></div>
-              </div>
-              <div class="stat-card" style="text-align:left;">
-                <h4 style="margin-bottom:16px; color:#1e293b;"><i class="fas fa-users-cog"></i> Group Settings</h4>
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>Group Name</span><span>HEALTH MINDS SAVING</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:12px;"><span>Meeting Day</span><span>Sundays, 2:00 PM</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:16px;"><span>Weekly Contribution</span><span>UGX 5000</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="memberDashboard" class="hidden">
-      <div class="dashboard">
-        <div class="sidebar" id="memberSidebar">
-          <div class="user-info">
-            <div class="user-avatar">JD</div>
-            <div class="user-name">Kafuko Esther</div>
-            <div class="user-role">Member | HMS-001</div>
-          </div>
-          <ul class="nav-links" id="memberNav">
-            <li><a href="#dashboard" class="nav-link active" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="#savings" class="nav-link" data-tab="savings"><i class="fas fa-wallet"></i> My Savings</a></li>
-            <li><a href="#borrow" class="nav-link" data-tab="borrow"><i class="fas fa-hand-holding-usd"></i> Borrow Funds</a></li>
-            <li><a href="#guarantee-request" class="nav-link" data-tab="guarantee-request"><i class="fas fa-file-contract"></i> Request Guarantee</a></li>
-            <li><a href="#guarantee-approve" class="nav-link" data-tab="guarantee-approve"><i class="fas fa-check-circle"></i> Approve Guarantee</a></li>
-            <li><a href="#history" class="nav-link" data-tab="history"><i class="fas fa-history"></i> Transaction History</a></li>
-            <li><a href="#report" class="nav-link" data-tab="report"><i class="fas fa-chart-pie"></i> Savings Report</a></li>
-            <li><a href="#guarantees" class="nav-link" data-tab="guarantees"><i class="fas fa-shield-alt"></i> My Guarantees</a></li>
-          </ul>
-        </div>
-
-        <div class="main-content">
-          <div class="dashboard-header">
-            <h2 class="dashboard-title" id="memberPageTitle">Member Dashboard</h2>
-            <button class="btn logout-btn" id="memberLogout"><i class="fas fa-sign-out-alt"></i> Log Out</button>
-          </div>
-
-          <div id="memberDashboardTab" class="tab-content">
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div>Your Total Savings</div>
-                <div class="stat-value currency">250,000</div>
-                <div class="stat-label">Saved over 10 weeks</div>
-              </div>
-              <div class="stat-card">
-                <div>Loan Eligible Amount</div>
-                <div class="stat-value currency">125,000</div>
-                <div class="stat-label">70% of your savings</div>
-              </div>
-            </div>
-            <h3 style="margin:32px 0 16px; font-weight:600;">Recent Transactions</h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th>Amount (UGX)</th>
-                    <th>Balance (UGX)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Dec 28, 2025</td>
-                    <td>Weekly Savings</td>
-                    <td class="borrow-amount currency">+25,000</td>
-                    <td class="currency">250,000</td>
-                  </tr>
-                  <tr>
-                    <td>Dec 21, 2025</td>
-                    <td>Weekly Savings</td>
-                    <td class="borrow-amount currency">+25,000</td>
-                    <td class="currency">225,000</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div id="memberSavingsTab" class="tab-content hidden">
-            <div class="stats-grid">
-              <div class="stat-card"><div>Total Savings</div><div class="stat-value currency">250,000</div><div class="stat-label">Lifetime contributions</div></div>
-              <div class="stat-card"><div>Next Contribution Due</div><div class="stat-value">Sun, Jan 4, 2026</div><div class="stat-label">UGX 25,000</div></div>
-            </div>
-            <button class="btn btn-primary" style="margin-top:24px; width:auto;"> <i class="fas fa-download"></i> Download Savings Statement </button>
-          </div>
-
-          <div id="memberBorrowTab" class="tab-content hidden">
-            <div style="background:#f9fafb; border-radius:12px; padding:20px; border:1px solid #e2e8f0;">
-              <h3 style="margin:0 0 12px;">Borrow Against Your Savings</h3>
-              <p style="margin-bottom:16px;">You can borrow up to <strong>70%</strong> of your current savings balance. Repayment in 4–8 weeks at 5% interest.</p>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
-                <div>Your Savings Balance: <strong class="currency">250,000</strong></div>
-                <div>Maximum Borrowable: <strong class="currency">125,000</strong></div>
-              </div>
-              <form id="borrowForm">
-                <div class="form-group">
-                  <label for="borrowAmount">Amount to Borrow (UGX)</label>
-                  <input type="number" id="borrowAmount" class="form-control" min="10000" max="125000" step="5000" placeholder="e.g., 50000" required>
-                </div>
-                <div class="form-group">
-                  <label for="borrowPurpose">Purpose of Loan</label>
-                  <select id="borrowPurpose" class="form-control" required>
-                    <option value="">Select purpose</option>
-                    <option value="medical">Medical Emergency</option>
-                    <option value="school-fees">School Fees</option>
-                    <option value="business">Small Business</option>
-                    <option value="agriculture">Agriculture/Farming</option>
-                    <option value="home">Home Improvement</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label>
-                    <input type="checkbox" id="agreeTerms" required>
-                    I agree to repay this loan in <strong>6 weeks</strong> with 10% interest without refusal.
-                  </label>
-                </div>
-                <button type="submit" class="btn btn-success" style="width:auto; background:#16a34a; color:#fff;">
-                  <i class="fas fa-paper-plane"></i> Submit Loan Request
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <div id="memberGuaranteeRequestTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Request Guarantee for Loan</h3>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px; margin-bottom:24px;">
-              <div class="stat-card" style="text-align:left;">
-                <div class="stat-label">Loan Details</div>
-                <div style="margin-top:12px; line-height:1.8;"><strong>Amount:</strong> UGX 100,000<br><strong>Purpose:</strong> Business<br><strong>Interest:</strong> UGX 10,000</div>
-              </div>
-              <div class="stat-card" style="text-align:left;">
-                <div class="stat-label">Guarantee Required</div>
-                <div style="margin-top:12px; line-height:1.8;"><strong>Number of Guarantors:</strong> 2<br><strong>Guarantee per Person:</strong> UGX 52,500</div>
-              </div>
-            </div>
-          </div>
-
-          <div id="memberGuaranteeApproveTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Pending Guarantee Requests</h3>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Borrower</th>
-                    <th>Loan Amount (UGX)</th>
-                    <th>Your Guarantee (UGX)</th>
-                    <th>Purpose</th>
-                    <th>Requested</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>HMS-018 (Wemishe Benjamin)</td>
-                    <td class="currency">50,000</td>
-                    <td class="currency">26,250</td>
-                    <td>Medical</td>
-                    <td>Dec 27, 2025</td>
-                    <td>
-                      <button class="btn btn-sm" style="padding:6px 12px; background:#10b981; color:white; margin-right:6px; width:auto;">Approve</button>
-                      <button class="btn btn-sm" style="padding:6px 12px; background:#ef4444; color:white; width:auto;">Reject</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div id="memberHistoryTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Transaction History</h3>
-            <div class="table-container">
-              <table>
-                <thead><tr><th>Date</th><th>Description</th><th>Amount (UGX)</th><th>Balance (UGX)</th></tr></thead>
-                <tbody>
-                  <tr><td>Dec 28, 2025</td><td>Weekly Savings</td><td class="currency">+25,000</td><td class="currency">250,000</td></tr>
-                  <tr><td>Dec 21, 2025</td><td>Weekly Savings</td><td class="currency">+25,000</td><td class="currency">225,000</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div id="memberReportTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">Savings Report</h3>
-            <div class="stat-card"><div class="stat-label">Current Balance</div><div class="stat-value currency">250,000</div></div>
-          </div>
-
-          <div id="memberGuaranteesTab" class="tab-content hidden">
-            <h3 style="margin-bottom:16px; font-weight:600;">My Guarantees</h3>
-            <div class="table-container"><table><thead><tr><th>Loan</th><th>Amount</th><th>Status</th></tr></thead><tbody><tr><td>LN-2025-042</td><td class="currency">84,000</td><td><span class="status status-active">Active</span></td></tr></tbody></table></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    <p>© 2025 HEALTH MINDS SAVING | Budaka, Uganda</p>
-    <p style="font-size:13px; margin-top:6px; color:#64748b;">
-      Empowering communities through collective savings • Registered under Uganda SACCO Societies Regulatory Authority
-    </p>
-    <p>Copyright 2025.<strong>By Rana website designers & and computer solutions.</strong> All rights reserved</p>
-  </footer>
-
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script>
+            <script>
     const ROLE_KEY = 'hms_selected_role';
     const STORAGE_KEY = 'hms_demo_accounts';
     const CURRENT_USER_KEY = 'hms_current_user';
@@ -1314,6 +984,37 @@
       });
     }
 
+    // Sidebar helpers
+    const adminSidebar = document.getElementById('adminSidebar');
+    const memberSidebar = document.getElementById('memberSidebar');
+    const hamburger = document.getElementById('hamburger');
+    const overlay = document.getElementById('overlay');
+
+    function getVisibleSidebar() {
+      if (adminDashboard && !adminDashboard.classList.contains('hidden')) return adminSidebar;
+      if (memberDashboard && !memberDashboard.classList.contains('hidden')) return memberSidebar;
+      return adminSidebar || memberSidebar;
+    }
+
+    function toggleSidebar(forceOpen) {
+      if (window.innerWidth > 768) return; // only toggle on mobile
+      const sb = getVisibleSidebar();
+      if (!sb) return;
+      if (typeof forceOpen === 'boolean') {
+        sb.classList.toggle('active', forceOpen);
+        hamburger && hamburger.classList.toggle('active', forceOpen);
+        overlay && overlay.classList.toggle('active', forceOpen);
+      } else {
+        sb.classList.toggle('active');
+        hamburger && hamburger.classList.toggle('active');
+        overlay && overlay.classList.toggle('active');
+      }
+    }
+
+    // Close sidebar helper
+    function closeSidebar() { toggleSidebar(false); }
+
+    // Show correct dashboard after login
     function showDashboardForUser(user) {
       loginPage.classList.add('hidden');
       adminDashboard.classList.add('hidden');
@@ -1326,6 +1027,17 @@
       }
 
       applyCurrencyFormatting();
+
+      // On mobile, open the sidebar so the user can select navigation after login
+      if (window.innerWidth <= 768) {
+        // ensure the visible sidebar is open
+        toggleSidebar(true);
+      } else {
+        // ensure sidebar isn't left in mobile-open state on desktop
+        [adminSidebar, memberSidebar].forEach(s => s && s.classList.remove('active'));
+        hamburger && hamburger.classList.remove('active');
+        overlay && overlay.classList.remove('active');
+      }
     }
 
     function showLoginUI() {
@@ -1333,6 +1045,10 @@
       memberDashboard.classList.add('hidden');
       loginPage.classList.remove('hidden');
       loginForm.reset();
+      // close sidebar on logout
+      [adminSidebar, memberSidebar].forEach(s => s && s.classList.remove('active'));
+      hamburger && hamburger.classList.remove('active');
+      overlay && overlay.classList.remove('active');
     }
 
     window.addEventListener('load', () => {
@@ -1471,6 +1187,8 @@
           settings: 'Admin Settings'
         };
         adminPageTitle.textContent = titles[this.getAttribute('data-tab')] || 'Admin Dashboard';
+        // On mobile, hide sidebar after selection
+        if (window.innerWidth <= 768) closeSidebar();
       });
     });
 
@@ -1513,31 +1231,23 @@
           guarantees: 'My Guarantees'
         };
         memberPageTitle.textContent = titles[tabName] || 'Member Dashboard';
+        // On mobile, hide sidebar after selection
+        if (window.innerWidth <= 768) closeSidebar();
       });
     });
 
-    const hamburger = document.getElementById('hamburger');
-    const overlay = document.getElementById('overlay');
-    const adminSidebar = document.getElementById('adminSidebar');
-    const memberSidebar = document.getElementById('memberSidebar');
-
-    const toggleSidebar = () => {
-      if (window.innerWidth > 768) return;
-      [adminSidebar, memberSidebar].forEach(sb => sb && sb.classList.toggle('active'));
-      hamburger && hamburger.classList.toggle('active');
-      overlay && overlay.classList.toggle('active');
-    };
-
-    hamburger && hamburger.addEventListener('click', toggleSidebar);
-    overlay && overlay.addEventListener('click', toggleSidebar);
+    // Sidebar toggle
+    hamburger && hamburger.addEventListener('click', () => toggleSidebar());
+    overlay && overlay.addEventListener('click', () => closeSidebar());
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') toggleSidebar();
+      if (e.key === 'Escape') closeSidebar();
     });
 
+    // Close sidebar when any nav-link clicked (global fallback)
     document.querySelectorAll('.nav-link').forEach(link => {
       link.addEventListener('click', () => {
-        if (window.innerWidth <= 768) toggleSidebar();
+        if (window.innerWidth <= 768) closeSidebar();
       });
     });
 
