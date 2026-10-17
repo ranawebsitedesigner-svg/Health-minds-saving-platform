@@ -442,6 +442,7 @@
   <script>
     const ROLE_KEY = 'hms_selected_role';
     const STORAGE_KEY = 'hms_demo_accounts';
+    const CURRENT_USER_KEY = 'hms_current_user';
 
     function getAccounts() {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
@@ -466,6 +467,22 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
+    function setCurrentUser(user) {
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+    }
+
+    function getCurrentUser() {
+      try {
+        return JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null');
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function clearCurrentUser() {
+      localStorage.removeItem(CURRENT_USER_KEY);
+    }
+
     const roleButtons = document.querySelectorAll('.role-btn');
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
@@ -486,6 +503,77 @@
       currentRoleButton.classList.add('active');
     }
 
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"'`]/g, (c) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '\"': '&quot;',
+        "'": '&#39;',
+        '`': '&#96;'
+      })[c]);
+    }
+
+    function showLoggedInUI(user) {
+      const card = document.querySelector('.login-card');
+      card.innerHTML = `
+        <div class="login-header">
+          <h2>Welcome, ${escapeHtml(user.name)}</h2>
+          <p>Signed in as <strong>${escapeHtml(user.id)}</strong> — <em>${escapeHtml(user.role)}</em></p>
+        </div>
+        <div style="margin-top:14px">
+          <p style="color:var(--gray);">This is a demo login. In a real app you would be redirected to your dashboard.</p>
+          <div style="display:grid; gap:10px; margin-top:18px">
+            <button id="btnDashboard" class="btn btn-primary" type="button">Go to dashboard</button>
+            <button id="btnSignOut" class="btn btn-secondary" type="button">Sign out</button>
+          </div>
+        </div>
+      `;
+
+      const btnDashboard = document.getElementById('btnDashboard');
+      const btnSignOut = document.getElementById('btnSignOut');
+
+      btnDashboard.addEventListener('click', () => {
+        // For now we show a simple in-page dashboard placeholder. Replace with a real route in production.
+        const shell = document.querySelector('.shell');
+        shell.innerHTML = `
+          <section style="padding:40px; display:flex; flex-direction:column; gap:18px">
+            <h1 style="margin:0">${escapeHtml(user.role === 'admin' ? 'Admin' : 'Member')} Dashboard</h1>
+            <p style="max-width:60ch; color:var(--gray)">Hello ${escapeHtml(user.name)} (${escapeHtml(user.id)}). This is a demo dashboard placeholder. Implement your app's dashboard and route here.</p>
+            <div style="display:flex; gap:10px; max-width:360px">
+              <button id="dashSignOut" class="btn btn-secondary">Sign out</button>
+            </div>
+          </section>
+        `;
+
+        const dashSignOut = document.getElementById('dashSignOut');
+        dashSignOut.addEventListener('click', () => {
+          clearCurrentUser();
+          window.location.reload();
+        });
+      });
+
+      btnSignOut.addEventListener('click', () => {
+        clearCurrentUser();
+        window.location.reload();
+      });
+    }
+
+    function showLoginUI() {
+      // reload the page to restore original UI
+      window.location.reload();
+    }
+
+    // On page load, if user already signed in, show the logged-in UI.
+    window.addEventListener('load', () => {
+      const current = getCurrentUser();
+      if (current && current.id) {
+        showLoggedInUI(current);
+      }
+
+      renderGoogleButton();
+    });
+
     loginForm.addEventListener('submit', (event) => {
       event.preventDefault();
 
@@ -495,14 +583,24 @@
       const accounts = getAccounts();
 
       const list = role === 'admin' ? accounts.admins : accounts.members;
-      const match = list.find((user) => user.id === enteredUser || user.name.toLowerCase() === enteredUser.toLowerCase());
+      const match = list.find((user) => (user.id && user.id.toLowerCase() === enteredUser.toLowerCase()) || (user.name && user.name.toLowerCase() === enteredUser.toLowerCase()));
 
       if (match && match.password === enteredPass) {
-        alert(role === 'admin' ? 'Administrator login successful.' : 'Member login successful.');
+        const currentUser = {
+          id: match.id,
+          name: match.name,
+          role: role,
+          signedAt: new Date().toISOString()
+        };
+
+        setCurrentUser(currentUser);
+        // show logged-in UI instead of a plain alert
+        showLoggedInUI(currentUser);
         return;
       }
 
-      alert('Login failed. Please check the demo credentials or create a new account.');
+      // Helpful failure message
+      alert('Login failed. Please check the demo credentials or create a new account.\n\nTip: try member HMS-001 / 1234 or admin hms.admin / H3@lthM1nd$2025!');
     });
 
     const createModal = document.getElementById('createModal');
@@ -568,8 +666,6 @@
         container.innerHTML = '<button class="btn btn-google" type="button"><i class="fa-brands fa-google"></i> Continue with Google</button>';
       }
     }
-
-    window.addEventListener('load', renderGoogleButton);
   </script>
 </body>
 </html>
