@@ -1,390 +1,575 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HEALTH MINDS SAVING - Group Management</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-* { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-:root{ --primary:#1e5631; --primary-dark:#154325; --secondary:#d96b0c; --success:#2e7d32; --light:#f8fafc; --dark:#1e293b; --gray:#64748b; --light-gray:#e2e8f0; --white:#ffffff; --card-shadow:0 4px 12px rgba(0,0,0,0.08); --radius:12px; }
-body{ background:linear-gradient(135deg,#f0f8f0 0%,#e6f4e6 100%); min-height:100vh; padding:20px; color:var(--dark); }
-.container{ max-width:1200px; margin:0 auto; }
-.hidden{ display:none !important; }
-.group-banner{ text-align:center; margin-bottom:20px; padding:12px; background:rgba(30,86,49,0.05); border-radius:var(--radius); font-weight:600; color:var(--primary); font-size:18px; border:1px dashed #a5d6a7; box-shadow:0 2px 6px rgba(30,86,49,0.05); }
-.hamburger{ display:none; flex-direction:column; width:30px; height:21px; cursor:pointer; position:fixed; top:20px; left:20px; z-index:1001; }
-.hamburger span{ height:3px; background:var(--dark); border-radius:2px; transition:0.3s; }
-.hamburger span:not(:last-child){ margin-bottom:4px; }
-.hamburger.active span:nth-child(1){ transform:translateY(9px) rotate(45deg); }
-.hamburger.active span:nth-child(2){ opacity:0; }
-.hamburger.active span:nth-child(3){ transform:translateY(-9px) rotate(-45deg); }
-.overlay{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:999; opacity:0; visibility:hidden; transition:opacity 0.3s; }
-.overlay.active{ opacity:1; visibility:visible; }
-.toast-container{ position:fixed; right:20px; top:80px; z-index:2000; display:flex; flex-direction:column; gap:10px; }
-.toast{ background:#111827; color:#fff; padding:10px 14px; border-radius:8px; box-shadow:0 6px 18px rgba(16,24,40,0.2); opacity:0.95; }
-.toast.success{ background:linear-gradient(90deg,#1e5631,#2e7d32); }
-.toast.warn{ background:linear-gradient(90deg,#d97706,#f59e0b); }
-.toast.error{ background:linear-gradient(90deg,#b91c1c,#ef4444); }
-.login-container{ max-width:450px; margin:60px auto; background:var(--white); border-radius:var(--radius); box-shadow:var(--card-shadow); overflow:hidden; }
-.login-header{ background:var(--primary); color:white; padding:24px; text-align:center; }
-.login-header h2{ font-size:24px; font-weight:600; }
-.login-body{ padding:32px; }
-.form-group{ margin-bottom:16px; }
-.form-group label{ display:block; margin-bottom:8px; font-weight:500; color:var(--dark); }
-.form-control{ width:100%; padding:10px 12px; border:1px solid var(--light-gray); border-radius:8px; font-size:15px; }
-.btn{ padding:10px 14px; border-radius:8px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s ease; display:inline-flex; align-items:center; justify-content:center; gap:8px; font-size:14px; }
-.btn-primary{ background:var(--primary); color:white; }
-.btn-primary:hover{ background:var(--primary-dark); }
-.btn-success{ background:var(--success); color:white; }
-.role-selector{ display:flex; gap:12px; margin-bottom:12px; }
-.role-btn{ flex:1; padding:10px; border:2px solid var(--light-gray); border-radius:8px; background:var(--white); font-weight:600; cursor:pointer; }
-.role-btn.active{ border-color:var(--primary); background:rgba(30,86,49,0.08); color:var(--primary); }
-.dashboard{ display:grid; grid-template-columns:250px 1fr; gap:20px; }
-@media(max-width:768px){ .dashboard{ grid-template-columns:1fr; } .sidebar{ position:fixed; top:0; left:0; height:100vh; width:250px; transform:translateX(-100%); transition:transform 0.3s ease; z-index:1000; } .sidebar.active{ transform:translateX(0); } .hamburger{ display:flex; } }
-.sidebar{ background:var(--white); border-radius:var(--radius); box-shadow:var(--card-shadow); padding:20px 0; }
-.user-info{ padding:0 20px 20px; border-bottom:1px solid var(--light-gray); }
-.user-avatar{ width:52px; height:52px; border-radius:50%; background:var(--primary); color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px; margin-bottom:8px; }
-.nav-links{ list-style:none; padding-left:0; }
-.nav-link{ display:flex; align-items:center; gap:10px; padding:10px 20px; color:var(--dark); text-decoration:none; border-left:4px solid transparent; }
-.nav-link.active, .nav-link:hover{ background:rgba(30,86,49,0.05); border-left-color:var(--primary); color:var(--primary); }
-.main-content{ background:var(--white); border-radius:var(--radius); padding:20px; box-shadow:var(--card-shadow); }
-.stat-card{ padding:16px; border-radius:10px; border:1px solid var(--light-gray); }
-.table-container{ overflow-x:auto; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.05); background:white; }
-table{ width:100%; border-collapse:collapse; }
-th, td{ padding:12px 10px; border-bottom:1px solid var(--light-gray); }
-.status{ padding:4px 10px; border-radius:14px; font-weight:600; font-size:13px; }
-.status-active{ background:rgba(46,125,50,0.12); color:var(--success); }
-.status-pending{ background:rgba(217,107,12,0.12); color:var(--secondary); }
-.small{ font-size:13px; color:var(--gray); }
-.action-btn{ padding:6px 10px; border-radius:8px; font-size:13px; }
-.input-inline{ display:flex; gap:8px; align-items:center; }
-.input-inline input{ flex:1; }
-.footer-note{ text-align:center; color:var(--gray); margin-top:20px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HEALTH MINDS SAVING - Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #1e5631;
+      --primary-dark: #154325;
+      --secondary: #d96b0c;
+      --success: #2e7d32;
+      --light: #f8fafc;
+      --dark: #1e293b;
+      --gray: #64748b;
+      --light-gray: #e2e8f0;
+      --white: #ffffff;
+      --danger: #dc2626;
+      --shadow: 0 18px 40px rgba(17, 24, 39, 0.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #effaf0 0%, #e7f4e8 100%);
+      color: var(--dark);
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: min(100%, 980px);
+      min-height: 620px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      border-radius: 26px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.8);
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(30, 86, 49, 0.08);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      position: relative;
+      background:
+        linear-gradient(135deg, rgba(30, 86, 49, 0.92), rgba(21, 67, 37, 0.92)),
+        url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      color: var(--white);
+      padding: 40px 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+      opacity: 0.97;
+    }
+
+    .brand-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 42ch;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.7;
+      font-size: 1.02rem;
+    }
+
+    .hero-features {
+      list-style: none;
+      padding: 0;
+      margin: 28px 0 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .hero-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255,255,255,0.92);
+      font-weight: 500;
+    }
+
+    .hero-features li i {
+      color: #b9f3c6;
+      width: 16px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.97);
+      padding: 36px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      width: min(100%, 420px);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .login-header h2 {
+      margin: 0 0 8px;
+      color: var(--primary-dark);
+      font-size: clamp(1.8rem, 2vw, 2.3rem);
+      letter-spacing: -0.03em;
+    }
+
+    .login-header p {
+      margin: 0;
+      color: var(--gray);
+      font-size: 0.95rem;
+    }
+
+    .role-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #edf6ee;
+      border-radius: 12px;
+      padding: 6px;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .role-btn {
+      border: 0;
+      background: transparent;
+      color: var(--gray);
+      padding: 11px 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .role-btn.active {
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 10px 23px rgba(30,86,49,0.22);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      border: 1px solid var(--light-gray);
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 14px 14px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: rgba(30, 86, 49, 0.6);
+      box-shadow: 0 0 0 4px rgba(30, 86, 49, 0.08);
+      background: var(--white);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      appearance: none;
+      border: 0;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      box-shadow: 0 12px 24px rgba(30,86,49,0.2);
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: var(--dark);
+    }
+
+    .btn-google {
+      background: #ffffff;
+      color: #202124;
+      border: 1px solid #dadce0;
+      box-shadow: 0 2px 8px rgba(32, 33, 36, 0.08);
+    }
+
+    .divider {
+      position: relative;
+      text-align: center;
+      margin: 18px 0 12px;
+      color: var(--gray);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .divider::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 1px;
+      background: var(--light-gray);
+      z-index: 0;
+    }
+
+    .divider span {
+      position: relative;
+      z-index: 1;
+      padding: 0 10px;
+      background: rgba(255,255,255,0.97);
+    }
+
+    .inline-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .muted {
+      color: var(--gray);
+      text-align: center;
+      font-size: 0.8rem;
+      margin-top: 12px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.46);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(100%, 430px);
+      background: var(--white);
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(15,23,42,0.25);
+      padding: 24px 22px 18px;
+    }
+
+    .modal-card h3 {
+      margin: 0 0 14px;
+      color: var(--primary-dark);
+      font-size: 1.7rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 860px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: 260px;
+      }
+
+      .panel {
+        padding-top: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="toast-container" id="toastContainer"></div>
-<div class="container">
-  <div class="group-banner"><i class="fas fa-heartbeat"></i> WELCOME TO <strong>HEALTH MINDS SAVING</strong> GROUP • Budaka, Uganda</div>
-  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
-  <div class="overlay" id="overlay"></div>
-
-  <div id="loginPage" class="login-container">
-    <div class="login-header"><h2>HEALTH MINDS SAVING Login</h2><p style="font-size:13px; opacity:0.9;">Secure Group Management System</p></div>
-    <div class="login-body">
-      <div class="role-selector">
-        <button class="role-btn active" data-role="member" type="button">Member</button>
-        <button class="role-btn" data-role="admin" type="button">Administrator</button>
+  <div class="shell">
+    <section class="hero">
+      <div class="brand">
+        <span class="brand-badge"><i class="fa-solid fa-heart-pulse"></i></span>
+        <span>Health Minds Saving</span>
       </div>
-      <form id="loginForm">
-        <div class="form-group"><label>Username / Member ID</label><input type="text" id="username" class="form-control" placeholder="Admin: hms.admin | Member: HMS-001" required></div>
-        <div class="form-group"><label>Password / PIN</label><input type="password" id="password" class="form-control" placeholder="Admin: H3@lthM1nd$2025! | Member: 1234" minlength="4" maxlength="40" required></div>
-        <div style="display:flex; gap:8px; align-items:center;"><button type="submit" class="btn btn-primary"> <i class="fas fa-sign-in-alt"></i> Log In</button><button type="button" id="demoCreds" class="btn" style="background:#e6f4ea;">Show Demo Creds</button></div>
-      </form>
-    </div>
+
+      <h1>Group management with care.</h1>
+      <p>
+        Help members save securely, track contributions, and manage group wellness with confidence.
+      </p>
+
+      <ul class="hero-features">
+        <li><i class="fa-solid fa-circle-check"></i> Secure member management</li>
+        <li><i class="fa-solid fa-circle-check"></i> Smart contribution tracking</li>
+        <li><i class="fa-solid fa-circle-check"></i> Easy admin oversight</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <div class="login-card">
+        <div class="login-header">
+          <h2>Welcome back</h2>
+          <p>Sign in to continue your group dashboard</p>
+        </div>
+
+        <div class="role-selector" aria-label="Role selector">
+          <button class="role-btn active" data-role="member" type="button">Member</button>
+          <button class="role-btn" data-role="admin" type="button">Administrator</button>
+        </div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Username / Member ID</label>
+            <input id="username" class="form-control" type="text" placeholder="Admin: hms.admin | Member: HMS-001" required />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password / PIN</label>
+            <input id="password" class="form-control" type="password" placeholder="Admin: H3@lthM1nd$2025! | Member: 1234" required />
+          </div>
+
+          <button class="btn btn-primary" type="submit">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            Sign in
+          </button>
+        </form>
+
+        <div class="divider"><span>or</span></div>
+
+        <div class="inline-actions">
+          <button id="btnCreateAccount" class="btn btn-secondary" type="button">
+            <i class="fa-solid fa-user-plus"></i>
+            Create account
+          </button>
+
+          <div id="googleSignIn" style="width:100%;"></div>
+        </div>
+
+        <p class="muted">Demo login accounts are preloaded for quick testing.</p>
+      </div>
+    </section>
   </div>
 
-  <!-- Admin Dashboard -->
-  <div id="adminDashboard" class="hidden">
-    <div class="dashboard">
-      <div class="sidebar" id="adminSidebar">
-        <div class="user-info"><div class="user-avatar">HMS</div><div class="user-name">Admin Dashboard</div><div class="small">HEALTH MINDS SAVING</div></div>
-        <ul class="nav-links" id="adminNav">
-          <li><a href="#dashboard" class="nav-link active" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
-          <li><a href="#approval" class="nav-link" data-tab="approval"><i class="fas fa-gavel"></i> Approval Center</a></li>
-          <li><a href="#members" class="nav-link" data-tab="members"><i class="fas fa-users"></i> Members</a></li>
-          <li><a href="#savings" class="nav-link" data-tab="savings"><i class="fas fa-wallet"></i> Savings</a></li>
-          <li><a href="#loans" class="nav-link" data-tab="loans"><i class="fas fa-hand-holding-usd"></i> Loans</a></li>
-          <li><a href="#reports" class="nav-link" data-tab="reports"><i class="fas fa-chart-line"></i> Reports</a></li>
-          <li><a href="#guarantees" class="nav-link" data-tab="guarantees"><i class="fas fa-shield-alt"></i> Guarantees</a></li>
-          <li><a href="#settings" class="nav-link" data-tab="settings"><i class="fas fa-cog"></i> Settings</a></li>
-        </ul>
+  <div id="createModal" class="modal" aria-modal="true" role="dialog" aria-labelledby="createAccountTitle">
+    <div class="modal-card">
+      <h3 id="createAccountTitle">Create account</h3>
+
+      <div class="form-group">
+        <label for="newName">Full name</label>
+        <input id="newName" class="form-control" type="text" placeholder="Jane Doe" />
       </div>
 
-      <div class="main-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h2 class="small" id="adminPageTitle">Administrator Dashboard</h2><div style="display:flex; gap:8px;"><button id="adminLogout" class="btn"> <i class="fas fa-sign-out-alt"></i> Log Out</button></div></div>
+      <div class="form-group">
+        <label for="newPhone">Phone</label>
+        <input id="newPhone" class="form-control" type="tel" placeholder="+256700000000" />
+      </div>
 
-        <div id="dashboardTab" class="tab-content">
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:12px;">
-            <div class="stat-card"><div class="small">Active Members</div><div class="stat-value" id="totalMembers">0</div></div>
-            <div class="stat-card"><div class="small">Total Savings</div><div class="stat-value currency" id="totalSavings">0</div></div>
-            <div class="stat-card"><div class="small">Total Interest</div><div class="stat-value currency" id="totalInterest">0</div></div>
-            <div class="stat-card"><div class="small">Active Loans</div><div class="stat-value" id="activeLoans">0</div></div>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-            <div>
-              <h3 style="font-weight:600; margin-bottom:8px;">Pending Loan Requests</h3>
-              <div class="table-container"><table id="pendingLoansTable"><thead><tr><th>ID</th><th>Member</th><th>Amount (UGX)</th><th>Purpose</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-            </div>
-            <div>
-              <h3 style="font-weight:600; margin-bottom:8px;">Recent Activity</h3>
-              <div id="recentActivityBox" style="background:#fff; border-radius:8px; padding:12px; height:220px; overflow:auto;"></div>
-            </div>
-          </div>
-        </div>
+      <div class="form-group">
+        <label for="newPassword">Password</label>
+        <input id="newPassword" class="form-control" type="password" placeholder="Choose a password or PIN" />
+      </div>
 
-        <div id="approvalTab" class="tab-content hidden">
-          <h3 style="font-weight:600;">Approval Center</h3>
-          <p class="small">All pending loan & guarantee requests are listed here. Approve only after review.</p>
-          <div style="display:grid; gap:12px;">
-            <div class="table-container"><table id="approvalTable"><thead><tr><th>Type</th><th>ID</th><th>Requester</th><th>Loan/Amount</th><th>Details</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-          </div>
-        </div>
-
-        <div id="membersTab" class="tab-content hidden">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><h3 style="font-weight:600;">Manage Members</h3><div style="display:flex; gap:8px;"><button id="addMemberBtn" class="btn btn-primary"> <i class="fas fa-plus"></i> Add Member</button><button id="exportMembersBtn" class="btn" style="background:#e6f4ea;">Export CSV</button></div></div>
-          <div id="addMemberForm" class="hidden" style="margin-bottom:10px; padding:10px; border-radius:8px; background:#f8fafc;">
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:8px;"><input id="newMemberName" class="form-control" placeholder="Full name"><input id="newMemberPhone" class="form-control" placeholder="Phone"><input id="newMemberLocation" class="form-control" placeholder="Location"><input id="newMemberFee" class="form-control" placeholder="Registration fee" type="number" value="5000"></div>
-            <div style="margin-top:8px; display:flex; gap:8px;"><button id="saveMemberBtn" class="btn btn-primary">Save</button><button id="cancelAddMember" class="btn">Cancel</button></div>
-          </div>
-          <div class="table-container"><table id="membersTable"><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Location</th><th>Savings</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
-        </div>
-
-        <div id="savingsTab" class="tab-content hidden">
-          <h3 style="font-weight:600;">Record Savings</h3>
-          <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;"><select id="savingsMemberSelect" class="form-control" style="min-width:220px;"><option value="">Select Member</option></select><button id="recordSavingsBtn" class="btn btn-primary" disabled>Record Savings</button></div>
-          <div id="savingsForm" class="hidden" style="padding:10px; background:#f0fdf4; border-radius:8px;">
-            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:8px;"><input id="savingsAmount" class="form-control" type="number" placeholder="Amount" value="25000"><input id="savingsDate" class="form-control" type="date"><select id="savingsMethod" class="form-control"><option>Cash</option><option>Mobile Money</option><option>Bank Transfer</option></select></div>
-            <div style="margin-top:8px; display:flex; gap:8px;"><button id="saveSavingsBtn" class="btn btn-success">Save</button><button id="cancelSavings" class="btn">Cancel</button></div>
-          </div>
-          <h4 style="margin-top:10px;">Savings History</h4>
-          <div class="table-container"><table id="savingsHistoryTable"><thead><tr><th>Date</th><th>Member ID</th><th>Name</th><th>Amount</th><th>Method</th><th>Updated By</th></tr></thead><tbody></tbody></table></div>
-        </div>
-
-        <div id="loansTab" class="tab-content hidden">
-          <h3 style="font-weight:600;">Loans</h3>
-          <div class="table-container"><table id="activeLoansTable"><thead><tr><th>ID</th><th>Member</th><th>Amount</th><th>Interest</th><th>Total Due</th><th>Disbursed</th><th>Due</th><th>Status</th></tr></thead><tbody></tbody></table></div>
-        </div>
-
-        <div id="reportsTab" class="tab-content hidden">
-          <h3 style="font-weight:600;">Reports</h3>
-          <div style="display:flex; gap:8px; margin-bottom:8px;"><button id="exportSavingsCsv" class="btn">Export Savings CSV</button><button id="exportLoansCsv" class="btn">Export Loans CSV</button></div>
-        </div>
-
-        <div id="guaranteesTab" class="tab-content hidden">
-          <h3 style="font-weight:600;">Guarantees</h3>
-          <h4>Pending Guarantees</h4>
-          <div class="table-container"><table id="pendingGuaranteesTable"><thead><tr><th>ID</th><th>Requester</th><th>Loan ID</th><th>Amount</th><th>Action</th></tr></thead><tbody></tbody></table></div>
-          <h4 style="margin-top:8px;">Approved Guarantees</h4>
-          <div class="table-container"><table id="approvedGuaranteesTable"><thead><tr><th>Loan ID</th><th>Borrower</th><th>Loan Amount</th><th>Guarantors</th><th>Total Guaranteed</th><th>Approved</th><th>Status</th></tr></thead><tbody></tbody></table></div>
-        </div>
-
-        <div id="settingsTab" class="tab-content hidden">
-          <h3 style="font-weight:600;">Settings</h3>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px;">
-            <div class="overview-card"><h4>Security</h4><div class="small">PIN Timeout: 5m</div></div>
-            <div class="overview-card"><h4>Group</h4><div class="small">Weekly Contribution: UGX 5000</div></div>
-          </div>
-          <div style="margin-top:12px; padding:10px; background:#fff; border-radius:8px;">
-            <h4>Admin Accounts</h4>
-            <div style="display:flex; gap:8px; margin-bottom:8px; align-items:center;"><input id="newAdminUsername" class="form-control" placeholder="username"><input id="newAdminPassword" type="password" class="form-control" placeholder="password"><select id="newAdminRole" class="form-control"><option>Administrator</option></select><button id="createAdminBtn" class="btn btn-primary">Create</button></div>
-            <div class="table-container"><table id="adminAccountsTable"><thead><tr><th>Username</th><th>Role</th><th>Last Login</th><th>Status</th><th>Actions</th></tr></thead><tbody></tbody></table></div>
-          </div>
-        </div>
-
+      <div class="modal-actions">
+        <button id="createCancel" class="btn btn-secondary" type="button">Cancel</button>
+        <button id="createSave" class="btn btn-primary" type="button">Create</button>
       </div>
     </div>
   </div>
 
-  <!-- Member Dashboard -->
-  <div id="memberDashboard" class="hidden">
-    <div class="dashboard">
-      <div class="sidebar" id="memberSidebar">
-        <div class="user-info"><div class="user-avatar" id="memberAvatar">JD</div><div class="user-name" id="memberSidebarName">Member Name</div><div class="small" id="memberSidebarRole">Member | HMS-001</div></div>
-        <ul class="nav-links" id="memberNav"><li><a class="nav-link active" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</a></li><li><a class="nav-link" data-tab="savings"><i class="fas fa-wallet"></i> My Savings</a></li><li><a class="nav-link" data-tab="loans"><i class="fas fa-hand-holding-usd"></i> My Loans</a></li><li><a class="nav-link" data-tab="guarantees"><i class="fas fa-shield-alt"></i> My Guarantees</a></li></ul>
-      </div>
-      <div class="main-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;"><h2 id="memberPageTitle">Member Dashboard</h2><div><button id="memberLogout" class="btn">Log Out</button></div></div>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    const ROLE_KEY = 'hms_selected_role';
+    const STORAGE_KEY = 'hms_demo_accounts';
 
-        <div id="memberDashboardTab" class="tab-content">
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:12px;">
-            <div class="overview-card"><div class="small">Total Savings</div><div class="overview-value currency" id="memberTotalSavings">0</div></div>
-            <div class="overview-card"><div class="small">Loan Eligible</div><div class="overview-value currency" id="memberEligibleLoan">0</div></div>
-          </div>
+    function getAccounts() {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      if (saved && Array.isArray(saved.admins) && Array.isArray(saved.members)) {
+        return saved;
+      }
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-            <div class="overview-card"><h4>Request Loan</h4><div class="small">Request a loan (up to 70% of savings)</div><div style="margin-top:8px;"><button id="requestLoanBtn" class="btn btn-primary">Request Loan</button></div></div>
-            <div class="overview-card"><h4>Request Guarantee</h4><div class="small">Request a guarantee for your loan</div><div style="margin-top:8px;"><button id="requestGuaranteeBtn" class="btn">Request Guarantee</button></div></div>
-          </div>
+      const seeded = {
+        admins: [
+          { id: 'hms.admin', name: 'Health Minds Admin', password: 'H3@lthM1nd$2025!' }
+        ],
+        members: [
+          { id: 'HMS-001', name: 'John Doe', password: '1234' }
+        ]
+      };
 
-          <h4 style="margin-top:12px;">My Loans</h4>
-          <div class="table-container"><table id="memberLoansTable"><thead><tr><th>ID</th><th>Amount</th><th>Interest</th><th>Total Due</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+      return seeded;
+    }
 
-          <h4 style="margin-top:12px;">My Guarantees</h4>
-          <div class="table-container"><table id="memberGuaranteesTable"><thead><tr><th>ID</th><th>Loan ID</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+    function saveAccounts(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
 
-        </div>
+    const roleButtons = document.querySelectorAll('.role-btn');
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
 
-        <div id="memberSavingsTab" class="tab-content hidden">
-          <h4>My Savings History</h4>
-          <div class="table-container"><table id="memberSavingsHistory"><thead><tr><th>Date</th><th>Amount</th><th>Method</th></tr></thead><tbody></tbody></table></div>
-        </div>
+    roleButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        roleButtons.forEach((btn) => btn.classList.remove('active'));
+        button.classList.add('active');
+        localStorage.setItem(ROLE_KEY, button.dataset.role);
+      });
+    });
 
-      </div>
-    </div>
-  </div>
+    const savedRole = localStorage.getItem(ROLE_KEY) || 'member';
+    const currentRoleButton = document.querySelector('.role-btn[data-role="' + savedRole + '"]');
+    if (currentRoleButton) {
+      roleButtons.forEach((btn) => btn.classList.remove('active'));
+      currentRoleButton.classList.add('active');
+    }
 
-  <div class="footer-note">HEALTH MINDS SAVING • Group Management System</div>
-</div>
+    loginForm.addEventListener('submit', (event) => {
+      event.preventDefault();
 
-<script>
-const STORAGE_KEY = 'hmsSavingsAppState_v3';
-const DEFAULT_INTEREST_RATE = 0.10; // 10%
+      const enteredUser = usernameInput.value.trim();
+      const enteredPass = passwordInput.value.trim();
+      const role = localStorage.getItem(ROLE_KEY) || 'member';
+      const accounts = getAccounts();
 
-const defaultState = {
-  members:[ { id:'HMS-001', name:'Kafuko Esther', phone:'+256 772123456', location:'Budaka', savings:250000, status:'Active', password:'1234' }, { id:'HMS-002', name:'Nabulo Rose', phone:'+256700403211', location:'Kiboga', savings:180000, status:'Active', password:'1234' } ],
-  savingsHistory:[ { date:'2025-12-28', memberId:'HMS-001', name:'Kafuko Esther', amount:25000, method:'Cash', updatedBy:'Administrator' } ],
-  loans:[ { id:'LN-101', member:'Kafuko Esther', memberId:'HMS-001', amount:150000, interest:15000, totalDue:165000, disbursed:'2025-12-10', dueDate:'2026-01-20', status:'Active', guarantors:[] } ],
-  pendingLoanRequests:[ { id:'PR-001', memberId:'HMS-002', member:'Nabulo Rose', amount:50000, purpose:'School fees', date:'2025-12-27' } ],
-  pendingGuarantees:[ { id:'GQ-001', requesterId:'HMS-001', requester:'Kafuko Esther', loanRequestId:'PR-001', loanId:null, amount:50000, date:'2025-12-27' } ],
-  adminUsers:[ { username:'hms.admin', role:'Administrator', lastLogin:'2025-12-28', status:'Active', password:'H3@lthM1nd$2025!' } ],
-  activity:[ 'System ready' ]
-};
+      const list = role === 'admin' ? accounts.admins : accounts.members;
+      const match = list.find((user) => user.id === enteredUser || user.name.toLowerCase() === enteredUser.toLowerCase());
 
-let state = loadState();
-let currentUser = { role:null, name:'', memberId:null };
+      if (match && match.password === enteredPass) {
+        alert(role === 'admin' ? 'Administrator login successful.' : 'Member login successful.');
+        return;
+      }
 
-function loadState(){ const raw = localStorage.getItem(STORAGE_KEY); if(!raw){ localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultState)); return JSON.parse(JSON.stringify(defaultState)); } try{ return JSON.parse(raw); }catch(e){ localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultState)); return JSON.parse(JSON.stringify(defaultState)); } }
-function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+      alert('Login failed. Please check the demo credentials or create a new account.');
+    });
 
-function showToast(msg, type='info', timeout=3000){ const container=document.getElementById('toastContainer'); const el=document.createElement('div'); el.className='toast ' + (type==='success'?'success': type==='warn'?'warn': type==='error'?'error':''); el.textContent = msg; container.appendChild(el); setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el.remove(),400); }, timeout); }
+    const createModal = document.getElementById('createModal');
+    const btnCreateAccount = document.getElementById('btnCreateAccount');
+    const createCancel = document.getElementById('createCancel');
+    const createSave = document.getElementById('createSave');
 
-function formatCurrency(v){ return Number(v||0).toLocaleString('en-US'); }
+    btnCreateAccount.addEventListener('click', () => createModal.classList.add('show'));
+    createCancel.addEventListener('click', () => createModal.classList.remove('show'));
 
-/* Rendering helpers */
-function renderEverything(){ renderDashboardStats(); renderMembersTable(); renderSavingsHistory(); renderPendingLoanRequests(); renderPendingGuarantees(); renderApprovedGuarantees(); renderActiveLoans(); renderAdminAccounts(); renderApprovalCenter(); populateSavingsMemberSelect(); renderMemberSpecificTables(); renderRecentActivity(); }
+    createSave.addEventListener('click', () => {
+      const name = document.getElementById('newName').value.trim();
+      const phone = document.getElementById('newPhone').value.trim();
+      const password = document.getElementById('newPassword').value.trim();
 
-function renderDashboardStats(){ const totalMembers=state.members.length; const totalSavings = state.members.reduce((s,m)=>s+Number(m.savings),0); const totalInterest = state.loans.reduce((s,l)=>s+Number(l.interest),0); document.getElementById('totalMembers').textContent = totalMembers; document.getElementById('totalSavings').textContent = formatCurrency(totalSavings); document.getElementById('totalInterest').textContent = formatCurrency(totalInterest); document.getElementById('activeLoans').textContent = state.loans.length; }
+      if (!name || !password) {
+        alert('Name and password are required.');
+        return;
+      }
 
-function renderMembersTable(){ const tbody=document.querySelector('#membersTable tbody'); tbody.innerHTML = state.members.map(m=>`<tr><td>${m.id}</td><td>${m.name}</td><td>${m.phone}</td><td>${m.location}</td><td>${formatCurrency(m.savings)}</td><td><span class="status ${m.status==='Active'?'status-active':'status-pending'}">${m.status}</span></td><td><button class="btn action-btn" data-edit="${m.id}">Edit</button> <button class="btn action-btn" data-delete="${m.id}">Delete</button></td></tr>`).join(''); }
+      const accounts = getAccounts();
+      const nextId = 'HMS-' + String((accounts.members.length + 1)).padStart(3, '0');
 
-function renderSavingsHistory(){ const tbody=document.querySelector('#savingsHistoryTable tbody'); if(!tbody) return; tbody.innerHTML = state.savingsHistory.map(s=>`<tr><td>${s.date}</td><td>${s.memberId}</td><td>${s.name}</td><td>${formatCurrency(s.amount)}</td><td>${s.method}</td><td>${s.updatedBy}</td></tr>`).join(''); }
+      accounts.members.push({
+        id: nextId,
+        name: name,
+        phone: phone || '',
+        password: password
+      });
 
-function renderPendingLoanRequests(){ const tbody=document.querySelector('#pendingLoansTable tbody'); tbody.innerHTML = state.pendingLoanRequests.map(r=>`<tr><td>${r.id}</td><td>${r.member} (${r.memberId})</td><td>${formatCurrency(r.amount)}</td><td>${r.purpose||''}</td><td><button class="btn" data-approve-loan="${r.id}">Approve</button> <button class="btn" data-decline-loan="${r.id}">Decline</button></td></tr>`).join(''); }
+      saveAccounts(accounts);
+      createModal.classList.remove('show');
+      document.getElementById('newName').value = '';
+      document.getElementById('newPhone').value = '';
+      document.getElementById('newPassword').value = '';
+      usernameInput.value = nextId;
+      passwordInput.value = password;
+      alert('Account created successfully. Your new member ID is: ' + nextId);
+    });
 
-function renderPendingGuarantees(){ const tbody=document.querySelector('#pendingGuaranteesTable tbody'); if(!tbody) return; tbody.innerHTML = state.pendingGuarantees.map(g=>`<tr><td>${g.id}</td><td>${g.requester} (${g.requesterId})</td><td>${g.loanRequestId||g.loanId||'—'}</td><td>${formatCurrency(g.amount)}</td><td><button class="btn" data-approve-guar="${g.id}">Approve</button> <button class="btn" data-decline-guar="${g.id}">Decline</button></td></tr>`).join(''); }
+    function renderGoogleButton() {
+      const container = document.getElementById('googleSignIn');
+      if (!container) return;
 
-function renderApprovedGuarantees(){ const tbody=document.querySelector('#approvedGuaranteesTable tbody'); if(!tbody) return; const rows = state.loans.map(l=>({ loanId:l.id, borrower:l.member, amount:l.amount, guarantors:(l.guarantors||[]).map(g=>g.name).join(', '), totalGuaranteed: (l.guarantors||[]).reduce((s,g)=>s+g.amount,0) })); tbody.innerHTML = rows.map(r=>`<tr><td>${r.loanId}</td><td>${r.borrower}</td><td>${formatCurrency(r.amount)}</td><td>${r.guarantors||'—'}</td><td>${formatCurrency(r.totalGuaranteed)}</td><td>—</td><td><span class="status status-active">Active</span></td></tr>`).join(''); }
+      if (window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.initialize({
+          client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+          callback: (response) => {
+            if (response.credential) {
+              alert('Google sign-in successful. Send the credential to your backend for verification.');
+            }
+          }
+        });
 
-function renderActiveLoans(){ const tbody=document.querySelector('#activeLoansTable tbody'); tbody.innerHTML = state.loans.map(l=>`<tr><td>${l.id}</td><td>${l.member}</td><td>${formatCurrency(l.amount)}</td><td>${formatCurrency(l.interest)}</td><td>${formatCurrency(l.totalDue)}</td><td>${l.disbursed}</td><td>${l.dueDate}</td><td><span class="status status-active">${l.status}</span></td></tr>`).join(''); }
+        google.accounts.id.renderButton(container, {
+          theme: 'outline',
+          size: 'large',
+          width: '100%',
+          text: 'continue_with',
+          shape: 'pill'
+        });
+      } else {
+        container.innerHTML = '<button class="btn btn-google" type="button"><i class="fa-brands fa-google"></i> Continue with Google</button>';
+      }
+    }
 
-function renderAdminAccounts(){ const tbody=document.querySelector('#adminAccountsTable tbody'); tbody.innerHTML = state.adminUsers.map(a=>`<tr><td>${a.username}</td><td>${a.role}</td><td>${a.lastLogin}</td><td><span class="status ${a.status==='Active'?'status-active':''}">${a.status}</span></td><td><button class="btn" data-edit-admin="${a.username}">Edit</button></td></tr>`).join(''); }
-
-function renderApprovalCenter(){ const tbody=document.querySelector('#approvalTable tbody'); if(!tbody) return; const loanRows = state.pendingLoanRequests.map(r=>({ type:'Loan', id:r.id, requester:`${r.member} (${r.memberId})`, details:r.purpose, info:formatCurrency(r.amount) })); const guarRows = state.pendingGuarantees.map(g=>({ type:'Guarantee', id:g.id, requester:`${g.requester} (${g.requesterId})`, details:`For ${g.loanRequestId||g.loanId||'—'}`, info:formatCurrency(g.amount) })); const rows = loanRows.concat(guarRows); tbody.innerHTML = rows.map(r=>`<tr><td>${r.type}</td><td>${r.id}</td><td>${r.requester}</td><td>${r.info}</td><td>${r.details}</td><td>${r.type==='Loan'?`<button class="btn" data-approve-loan="${r.id}">Approve</button> <button class="btn" data-decline-loan="${r.id}">Decline</button>`:`<button class="btn" data-approve-guar="${r.id}">Approve</button> <button class="btn" data-decline-guar="${r.id}">Decline</button>`}</td></tr>`).join(''); }
-
-function populateSavingsMemberSelect(){ const sel=document.getElementById('savingsMemberSelect'); sel.innerHTML = '<option value="">Select Member</option>' + state.members.map(m=>`<option value="${m.id}">${m.name} (${m.id})</option>`).join(''); }
-
-function renderRecentActivity(){ const box=document.getElementById('recentActivityBox'); box.innerHTML = state.activity.slice(0,50).map(a=>`<div style="padding:6px 0; border-bottom:1px solid #f1f5f9;">• ${a}</div>`).join(''); }
-
-function renderMemberSpecificTables(){ if(!currentUser || currentUser.role!=='member') return; // fill member loans and guarantees
-  const loansTbody = document.querySelector('#memberLoansTable tbody'); const gaurTbody = document.querySelector('#memberGuaranteesTable tbody'); const savingsTbody = document.querySelector('#memberSavingsHistory tbody'); if(loansTbody){ const myLoans = state.loans.filter(l=>l.memberId===currentUser.memberId); loansTbody.innerHTML = myLoans.map(l=>`<tr><td>${l.id}</td><td>${formatCurrency(l.amount)}</td><td>${formatCurrency(l.interest)}</td><td>${formatCurrency(l.totalDue)}</td><td><span class="status status-active">${l.status}</span></td></tr>`).join(''); }
-  if(gaurTbody){ const myGuars = state.pendingGuarantees.filter(g=>g.requesterId===currentUser.memberId).concat(state.loans.flatMap(l=> (l.guarantors||[]).filter(g=>g.id===currentUser.memberId).map(g=>({ id:g.id, loanId:l.id, amount:g.amount, status:'Approved' })))); gaurTbody.innerHTML = myGuars.map(g=>`<tr><td>${g.id||g.loanId}</td><td>${g.loanId||g.loanRequestId||'—'}</td><td>${formatCurrency(g.amount||0)}</td><td>${g.status||'Pending'}</td></tr>`).join(''); }
-  if(savingsTbody){ const history = state.savingsHistory.filter(s=>s.memberId===currentUser.memberId); savingsTbody.innerHTML = history.map(h=>`<tr><td>${h.date}</td><td>${formatCurrency(h.amount)}</td><td>${h.method}</td></tr>`).join(''); }
-}
-
-/* Actions: Loans & Guarantees with realistic logic */
-function approveLoan(requestId){ const idx = state.pendingLoanRequests.findIndex(r=>r.id===requestId); if(idx===-1) return showToast('Loan request not found', 'error'); const req = state.pendingLoanRequests.splice(idx,1)[0]; // basic check: member exists
-  const member = state.members.find(m=>m.id===req.memberId); if(!member) { showToast('Member not found for loan', 'error'); return; }
-  // calculate interest & due date
-  const interest = Math.ceil(req.amount * DEFAULT_INTEREST_RATE);
-  const totalDue = req.amount + interest;
-  const loanId = `LN-${100 + state.loans.length + 1}`;
-  const disbursed = new Date().toISOString().slice(0,10);
-  const dueDate = new Date(Date.now() + 1000*60*60*24*28).toISOString().slice(0,10);
-  const loan = { id:loanId, member:member.name, memberId:member.id, amount:req.amount, interest, totalDue, disbursed, dueDate, status:'Active', guarantors:[] };
-  state.loans.push(loan);
-  state.activity.unshift(`${member.name} loan approved (${formatCurrency(req.amount)})`);
-  saveState(); renderEverything(); showToast('Loan approved', 'success'); }
-
-function declineLoan(requestId){ const idx = state.pendingLoanRequests.findIndex(r=>r.id===requestId); if(idx===-1) return showToast('Not found', 'error'); const req = state.pendingLoanRequests.splice(idx,1)[0]; state.activity.unshift(`${req.member} loan request declined`); saveState(); renderEverything(); showToast('Loan request declined', 'warn'); }
-
-function approveGuarantee(id){ const idx = state.pendingGuarantees.findIndex(g=>g.id===id); if(idx===-1) return showToast('Guarantee not found','error'); const g = state.pendingGuarantees.splice(idx,1)[0]; // find loan (pending or active)
-  const loan = state.loans.find(l=> l.id===g.loanId) || state.loans.find(l=> l.id===g.loanRequestId) || null; // attach as guarantor to loan if exists
-  const guarantor = { id:g.requesterId, name:g.requester, amount:g.amount };
-  if(loan){ loan.guarantors = loan.guarantors || []; loan.guarantors.push(guarantor); state.activity.unshift(`Guarantee ${g.id} approved for loan ${loan.id}`); } else { // store as approved guarantee reference by loanRequestId
-    state.activity.unshift(`Guarantee ${g.id} approved (no active loan linked)`);
-  }
-  saveState(); renderEverything(); showToast('Guarantee approved','success'); }
-
-function declineGuarantee(id){ const idx = state.pendingGuarantees.findIndex(g=>g.id===id); if(idx===-1) return showToast('Not found','error'); const g = state.pendingGuarantees.splice(idx,1)[0]; state.activity.unshift(`Guarantee ${g.id} declined`); saveState(); renderEverything(); showToast('Guarantee declined','warn'); }
-
-/* Member & admin CRUD */
-function addMemberInline(){ const name = document.getElementById('newMemberName').value.trim(); const phone = document.getElementById('newMemberPhone').value.trim(); const location = document.getElementById('newMemberLocation').value.trim(); const fee = Number(document.getElementById('newMemberFee').value||0); if(!name||!phone||!location) return showToast('Complete member details','error'); const next=state.members.length+1; const id = `HMS-${String(next).padStart(3,'0')}`; const m={ id, name, phone, location, savings:fee, status:'Active', password:'1234' }; state.members.push(m); state.savingsHistory.unshift({ date:new Date().toISOString().slice(0,10), memberId:id, name, amount:fee, method:'Cash', updatedBy:'Administrator' }); state.activity.unshift(`${name} added`); saveState(); renderEverything(); document.getElementById('addMemberForm').classList.add('hidden'); showToast('Member added','success'); }
-
-function editMember(id){ const m = state.members.find(x=>x.id===id); if(!m) return showToast('Member not found','error'); const name = prompt('Full name', m.name); if(name===null) return; const phone = prompt('Phone', m.phone); if(phone===null) return; const location = prompt('Location', m.location); if(location===null) return; m.name = name.trim()||m.name; m.phone = phone.trim()||m.phone; m.location = location.trim()||m.location; state.activity.unshift(`${m.name} updated`); saveState(); renderEverything(); showToast('Member updated','success'); }
-
-function deleteMember(id){ if(!confirm('Delete member and related data?')) return; const idx = state.members.findIndex(m=>m.id===id); if(idx===-1) return showToast('Not found','error'); const rem = state.members.splice(idx,1)[0]; state.savingsHistory = state.savingsHistory.filter(s=>s.memberId!==id); state.pendingLoanRequests = state.pendingLoanRequests.filter(p=>p.memberId!==id); state.loans = state.loans.filter(l=>l.memberId!==id); state.activity.unshift(`${rem.name} deleted`); saveState(); renderEverything(); showToast('Member deleted','warn'); }
-
-/* Member actions: request loan/guarantee */
-function memberRequestLoan(){ if(!currentUser || currentUser.role!=='member') return showToast('Login as member','error'); const amount = Number(prompt('Loan amount (UGX)')||0); if(!amount || amount<=0) return showToast('Invalid amount','error'); const member = state.members.find(m=>m.id===currentUser.memberId); if(!member) return showToast('Member not found','error'); // simple eligibility check: amount <= 70% of savings * 2 (allow some)
-  const max = Math.floor(member.savings * 0.7); if(amount > max) { if(!confirm(`Requested ${formatCurrency(amount)} exceeds eligible ${formatCurrency(max)}. Submit anyway?`)) return; }
-  const id = `PR-${100 + state.pendingLoanRequests.length + 1}`; state.pendingLoanRequests.push({ id, memberId:member.id, member:member.name, amount, purpose:'Member Request', date:new Date().toISOString().slice(0,10) }); state.activity.unshift(`${member.name} requested loan ${formatCurrency(amount)}`); saveState(); renderEverything(); showToast('Loan request sent','success'); }
-
-function memberRequestGuarantee(){ if(!currentUser || currentUser.role!=='member') return showToast('Login as member','error'); const loanId = prompt('Loan Request ID to guarantee (e.g., PR-001)')||''; const amount = Number(prompt('Amount to guarantee (UGX)')||0); if(!loanId||!amount) return showToast('Invalid input','error'); const id = `GQ-${100 + state.pendingGuarantees.length + 1}`; state.pendingGuarantees.push({ id, requesterId:currentUser.memberId, requester:currentUser.name, loanRequestId:loanId, amount, date:new Date().toISOString().slice(0,10) }); state.activity.unshift(`${currentUser.name} requested guarantee`); saveState(); renderEverything(); showToast('Guarantee requested','success'); }
-
-/* Admin accounts */
-function createAdminAccount(){ const user = document.getElementById('newAdminUsername').value.trim(); const pass = document.getElementById('newAdminPassword').value; if(!user||!pass) return showToast('Enter username and password','error'); if(pass.length<8) return showToast('Password must be at least 8 chars','error'); if(state.adminUsers.find(a=>a.username===user)) return showToast('Username exists','error'); state.adminUsers.push({ username:user, role:'Administrator', lastLogin:new Date().toISOString().slice(0,10), status:'Active', password:pass }); saveState(); renderAdminAccounts(); showToast('Admin account created','success'); document.getElementById('newAdminUsername').value=''; document.getElementById('newAdminPassword').value=''; }
-
-/* CSV Export utility */
-function exportCSV(filename, rows){ if(!rows || !rows.length) return showToast('No data to export','warn'); const keys = Object.keys(rows[0]); const csv = [keys.join(',')].concat(rows.map(r=> keys.map(k=>`"${String(r[k]||'').replace(/"/g,'""')}"`).join(',') )).join('\n'); const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('CSV exported','success'); }
-
-/* Event bindings */
-function attachHandlers(){ document.querySelectorAll('.role-btn').forEach(b=> b.addEventListener('click', ()=>{ document.querySelectorAll('.role-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); const role=b.dataset.role; const un=document.getElementById('username'); const pw=document.getElementById('password'); if(role==='admin'){ un.placeholder='hms.admin'; pw.placeholder='H3@lthM1nd$2025!'; } else { un.placeholder='HMS-001'; pw.placeholder='1234'; } }));
-
-  document.getElementById('demoCreds').addEventListener('click', ()=>{ showToast('Admin: hms.admin / H3@lthM1nd$2025!  Member: HMS-001 / 1234','info',6000); });
-
-  document.getElementById('loginForm').addEventListener('submit', e=>{ e.preventDefault(); const role = document.querySelector('.role-btn.active').dataset.role; const username=document.getElementById('username').value.trim(); const password=document.getElementById('password').value; if(!username||!password) return showToast('Enter credentials','error'); if(role==='admin'){ const a=state.adminUsers.find(u=>u.username===username && u.password===password); if(a){ currentUser={ role:'admin', name:a.username, memberId:null }; showToast('Welcome Admin','success'); showAdminDashboard(); renderEverything(); return; } return showToast('Invalid admin credentials','error'); } const m = state.members.find(x=> (x.id===username || x.phone===username) && x.password===password); if(m){ currentUser={ role:'member', name:m.name, memberId:m.id }; showToast(`Welcome ${m.name}`,'success'); showMemberDashboard(m.id); renderEverything(); return; } showToast('Invalid member credentials','error'); });
-
-  document.getElementById('adminLogout').addEventListener('click', showLoginPage);
-  document.getElementById('memberLogout').addEventListener('click', showLoginPage);
-
-  document.getElementById('addMemberBtn').addEventListener('click', ()=> document.getElementById('addMemberForm').classList.toggle('hidden'));
-  document.getElementById('cancelAddMember').addEventListener('click', ()=> document.getElementById('addMemberForm').classList.add('hidden'));
-  document.getElementById('saveMemberBtn').addEventListener('click', addMemberInline);
-
-  document.getElementById('savingsMemberSelect').addEventListener('change', e=>{ const id=e.target.value; document.getElementById('recordSavingsBtn').disabled = !id; const form = document.getElementById('savingsForm'); if(!id) form.classList.add('hidden'); });
-  document.getElementById('recordSavingsBtn').addEventListener('click', ()=>{ const id=document.getElementById('savingsMemberSelect').value; if(!id) return showToast('Select member','error'); const m=state.members.find(x=>x.id===id); document.getElementById('savingsAmount').value='25000'; document.getElementById('savingsDate').value = new Date().toISOString().slice(0,10); document.getElementById('savingsForm').classList.remove('hidden'); });
-  document.getElementById('cancelSavings').addEventListener('click', ()=> document.getElementById('savingsForm').classList.add('hidden'));
-  document.getElementById('saveSavingsBtn').addEventListener('click', ()=>{ const id=document.getElementById('savingsMemberSelect').value; const amount=Number(document.getElementById('savingsAmount').value||0); if(!id) return showToast('Select member','error'); if(amount<=0) return showToast('Invalid amount','error'); const m=state.members.find(x=>x.id===id); m.savings += amount; state.savingsHistory.unshift({ date:document.getElementById('savingsDate').value||new Date().toISOString().slice(0,10), memberId:m.id, name:m.name, amount, method:document.getElementById('savingsMethod').value, updatedBy:'Administrator' }); state.activity.unshift(`${m.name} saved ${formatCurrency(amount)}`); saveState(); renderEverything(); document.getElementById('savingsForm').classList.add('hidden'); showToast('Savings recorded','success'); });
-
-  document.getElementById('hamburger').addEventListener('click', ()=>{ const sidebar = currentUser.role==='admin'? document.getElementById('adminSidebar') : document.getElementById('memberSidebar'); sidebar.classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); document.getElementById('hamburger').classList.toggle('active'); });
-  document.getElementById('overlay').addEventListener('click', ()=>{ document.querySelectorAll('.sidebar').forEach(s=>s.classList.remove('active')); document.getElementById('overlay').classList.remove('active'); document.getElementById('hamburger').classList.remove('active'); });
-
-  document.getElementById('exportMembersBtn').addEventListener('click', ()=> exportCSV('members.csv', state.members.map(m=>({ id:m.id, name:m.name, phone:m.phone, location:m.location, savings:m.savings }))));
-  document.getElementById('exportSavingsCsv').addEventListener('click', ()=> exportCSV('savings_history.csv', state.savingsHistory.map(s=>({ date:s.date, memberId:s.memberId, name:s.name, amount:s.amount, method:s.method }))));
-  document.getElementById('exportLoansCsv').addEventListener('click', ()=> exportCSV('loans.csv', state.loans.map(l=>({ id:l.id, member:l.member, amount:l.amount, interest:l.interest, totalDue:l.totalDue }))));
-
-  document.getElementById('createAdminBtn').addEventListener('click', createAdminAccount);
-
-  document.getElementById('requestLoanBtn').addEventListener('click', memberRequestLoan);
-  document.getElementById('requestGuaranteeBtn').addEventListener('click', memberRequestGuarantee);
-
-  // delegated event handlers for dynamic buttons
-  document.addEventListener('click', (ev)=>{
-    const approveLoanBtn = ev.target.closest('[data-approve-loan]'); if(approveLoanBtn) { approveLoan(approveLoanBtn.getAttribute('data-approve-loan')); return; }
-    const declineLoanBtn = ev.target.closest('[data-decline-loan]'); if(declineLoanBtn) { declineLoan(declineLoanBtn.getAttribute('data-decline-loan')); return; }
-    const approveGuarBtn = ev.target.closest('[data-approve-guar]'); if(approveGuarBtn) { approveGuarantee(approveGuarBtn.getAttribute('data-approve-guar')); return; }
-    const declineGuarBtn = ev.target.closest('[data-decline-guar]'); if(declineGuarBtn) { declineGuarantee(declineGuarBtn.getAttribute('data-decline-guar')); return; }
-    const editBtn = ev.target.closest('[data-edit]'); if(editBtn) { editMember(editBtn.getAttribute('data-edit')); return; }
-    const delBtn = ev.target.closest('[data-delete]'); if(delBtn) { deleteMember(delBtn.getAttribute('data-delete')); return; }
-  });
-
-  // nav bindings
-  document.querySelectorAll('#adminNav .nav-link').forEach(link=> link.addEventListener('click', e=>{ e.preventDefault(); const map={ dashboard:'dashboardTab', approval:'approvalTab', members:'membersTab', savings:'savingsTab', loans:'loansTab', reports:'reportsTab', guarantees:'guaranteesTab', settings:'settingsTab' }; document.querySelectorAll('#adminNav .nav-link').forEach(l=>l.classList.remove('active')); link.classList.add('active'); showOnlyTab(map[link.dataset.tab]); }));
-  document.querySelectorAll('#memberNav .nav-link').forEach(link=> link.addEventListener('click', e=>{ e.preventDefault(); document.querySelectorAll('#memberNav .nav-link').forEach(l=>l.classList.remove('active')); link.classList.add('active'); const target = link.dataset.tab==='savings' ? 'memberSavingsTab' : (link.dataset.tab==='loans'?'memberDashboardTab':'memberDashboardTab'); showOnlyTab(target); }));
-}
-
-function showOnlyTab(id){ document.querySelectorAll('.tab-content').forEach(t=>t.classList.add('hidden')); const el=document.getElementById(id); if(el) el.classList.remove('hidden'); }
-
-function showLoginPage(){ currentUser={ role:null, name:'', memberId:null }; document.getElementById('loginPage').classList.remove('hidden'); document.getElementById('adminDashboard').classList.add('hidden'); document.getElementById('memberDashboard').classList.add('hidden'); document.querySelectorAll('.sidebar').forEach(s=>s.classList.remove('active')); }
-
-function showAdminDashboard(){ currentUser = { role:'admin', name:'Administrator' }; document.getElementById('loginPage').classList.add('hidden'); document.getElementById('adminDashboard').classList.remove('hidden'); document.getElementById('memberDashboard').classList.add('hidden'); showOnlyTab('dashboardTab'); renderEverything(); }
-
-function showMemberDashboard(memberId){ const member = state.members.find(m=>m.id===memberId); if(!member) return showToast('Member not found','error'); currentUser={ role:'member', name:member.name, memberId:member.id }; document.getElementById('loginPage').classList.add('hidden'); document.getElementById('adminDashboard').classList.add('hidden'); document.getElementById('memberDashboard').classList.remove('hidden'); document.getElementById('memberAvatar').textContent = member.name.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase(); document.getElementById('memberSidebarName').textContent = member.name; document.getElementById('memberSidebarRole').textContent = `Member | ${member.id}`; document.getElementById('memberPageTitle').textContent = `${member.name} Dashboard`; document.getElementById('memberTotalSavings').textContent = formatCurrency(member.savings); document.getElementById('memberEligibleLoan').textContent = formatCurrency(Math.floor(member.savings*0.7)); renderMemberSpecificTables(); showOnlyTab('memberDashboardTab'); }
-
-/* Init */
-function initialize(){ attachHandlers(); renderEverything(); showLoginPage(); document.getElementById('savingsDate').value = new Date().toISOString().slice(0,10); }
-initialize();
-</script>
+    window.addEventListener('load', renderGoogleButton);
+  </script>
 </body>
 </html>
